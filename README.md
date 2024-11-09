@@ -9,7 +9,7 @@ We initially struggled with how to conceptualize what data structures we would u
 # Results Summary
 Our KV store program was tested by a script simulating 600 requests which were provided by Professor Anwar from coding assignment 1. Our results indicate that as the number of stores increased, the throughput increased while the average latency and total time to complete the requests decreased. Thus, this resulted in consistent optimization as the number of stores increased. Our charts of our test outcomes may be seen below.
 
-<img src="Graphs/Average_latency.png" alt="Screenshot" width="300"/>
-<img src="Graphs/table.png" alt="Screenshot" width="300"/>
-<img src="Graphs/Throughput.png" alt="Screenshot" width="300"/>
-<img src="Graphs/Total_time.png" alt="Screenshot" width="300"/>
+<img src="Graphs/table.png" alt="Screenshot" width="800"/>
+<img src="Graphs/Average_latency.png" alt="Screenshot" width="500"/>
+<img src="Graphs/Throughput.png" alt="Screenshot" width="500"/>
+<img src="Graphs/Total_time.png" alt="Screenshot" width="500"/>
