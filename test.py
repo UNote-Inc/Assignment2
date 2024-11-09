@@ -6,7 +6,7 @@ import random
 import subprocess
 
 # The base URL of the Flask server
-BASE_URL = 'http://127.0.0.1:5000'
+BASE_URL = 'http://127.0.0.1:5980'
 
 # Configure the number of threads and operations
 NUM_THREADS = 3

@@ -4,9 +4,7 @@ import threading
 from datetime import datetime
 import json
 import os
-import hashlib
 from HashRing import HashRing
-import random
 
 """
 Command Line
@@ -30,25 +28,9 @@ kv_stores = [{} for _ in range(num_stores)]
 kv_store_lock = threading.Lock() # Locking mechanism to handle concurrent requests
 KV_LOG_FILE = 'kv_store_log.txt' # File to store data as backup in case of app failure
 
-def add_store_to_ring(store_id, num_virtual_nodes=100):
-    for i in range(num_virtual_nodes):
-        hash_key = hashlib.sha256(f"{store_id}-{i}".encode()).hexdigest()
-        hash_ring[hash_key] = store_id
-
-# hash_ring = HashRing(num_virtual_nodes=100)
+hash_ring = HashRing(num_virtual_nodes=100)
 for store_id in range(num_stores):
-    add_store_to_ring(store_id)
-
-def lookup_store_from_key(key):
-    key_hash = hashlib.sha256(key.encode()).hexdigest()
-    sorted_hashes = sorted(hash_ring.keys())
-    app.logger.info(f"Key '{key}' hashed to {key_hash}")
-    for hash_key in sorted_hashes:
-        if key_hash < hash_key:
-            app.logger.info(f"Key '{key}' assigned to store {hash_ring[hash_key]}")
-            return hash_ring[hash_key]
-    app.logger.info(f"Key '{key}' wrapped around to store {hash_ring[sorted_hashes[0]]}")
-    return hash_ring[sorted_hashes[0]]
+    hash_ring.add_node(store_id)
 
 def persist_to_file():
     with open(KV_LOG_FILE, 'w') as f:
@@ -76,8 +58,7 @@ def get_value(key):
     if not key:
         return f"ERROR: must enter a nonempty key.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 400
 
-    # store_id = hash_ring.get_store(key)
-    store_id = lookup_store_from_key(key)
+    store_id = hash_ring.get_store(key)
     with kv_store_lock:
         if key in kv_stores[store_id]:
             return f"Value: {kv_stores[store_id][key]}.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 200
@@ -89,9 +70,7 @@ def add_value(key, value):
     if not key or not value:
         return f"ERROR: Key and value cannot be empty.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 400
 
-    # store_id = hash_ring.get_store(key)
-    store_id = lookup_store_from_key(key)
-    
+    store_id = hash_ring.get_store(key)
     with kv_store_lock:
         if key in kv_stores[store_id]:
             return f"ERROR: Key already exists.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 409
@@ -104,8 +83,7 @@ def update_value(key, value):
     if not key or not value:
         return f"ERROR: key and value can't be empty.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
     
-    # store_id = hash_ring.get_store(key)
-    store_id = lookup_store_from_key(key)
+    store_id = hash_ring.get_store(key)
     with kv_store_lock:
         if key not in kv_stores[store_id]:
             return f"ERROR: Key: '{key}' not found.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 404
@@ -121,8 +99,7 @@ def delete_value(key):
     if not key:
         return f"ERROR: must enter a nonempty key.\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 400
 
-    # store_id = hash_ring.get_store(key)
-    store_id = lookup_store_from_key(key)
+    store_id = hash_ring.get_store(key)
     with kv_store_lock:
         if key in kv_stores[store_id]:
             del kv_stores[store_id][key]

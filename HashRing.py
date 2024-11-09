@@ -18,7 +18,7 @@ class HashRing:
     
     def remove_node(self, node_id):
         if node_id not in self.nodes:
-            print("Non-existent node coudl not be removed from hash ring\n")
+            print("Non-existent node could not be removed from hash ring\n")
             return
         self.nodes.remove(node_id) # Remove from active nodes
         # Create new dict excluding all entries pointing to node_id
@@ -46,10 +46,4 @@ class HashRing:
             if key_hash < hash_key:
                 return self.ring[hash_key]
         return self.ring[sorted_hashes[0]]
-        
-    '''
-    def update_persist(self):
-        with open(KV_LOG_FILE, 'w') as f:
-            json.dump(kv_stores, f, indent=4) # Dump store elements into JSON
-            f.flush()
-    '''
+    
