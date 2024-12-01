@@ -36,10 +36,6 @@ hash_ring = HashRing(num_virtual_nodes=100)
 hash_ring.add_node("127.0.0.1:5980")
 hash_ring.add_node("127.0.0.1:5981")
 hash_ring.add_node("127.0.0.1:5982")
-# for store_id in range(num_stores): 
-#     # Currently our store ids are 0,1,2
-#     # hash_ring.add_node(store_id + 5980)
-#     hash_ring.add_node(store_id)
 
 def persist_to_file():
     with open(KV_LOG_FILE, 'w') as f:
@@ -188,10 +184,6 @@ def get_all():
 @app.route('/deleteall', methods=['DELETE'])
 def delete_all():
     errors = []
-    # local_store_id = f"127.0.0.1:{app.config['PORT']}"
-    
-    # if local_store_id in hash_ring.nodes:
-    #     hash_ring.nodes.remove(local_store_id) # Make sure we remove it from the list of nodes to call deleteall on
 
     parent_port = f"127.0.0.1:5980"
     if f"127.0.0.1:{app.config['PORT']}" == parent_port:
@@ -213,26 +205,6 @@ def delete_all():
         return jsonify({"error": "Failed to del from som store", "details": errors}), 500
     
     return f"Successfully deleted all key-values:\n Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", 200
-
-# @app.route('/<operation>/<key>', methods=['GET', 'POST', 'PUT', 'DELETE'])
-# def forward_request(operation, key):
-#     # forward req to the right store
-#     target_port = hash_ring.get_node(key)
-#     target_url = f"http://127.0.0.1:{target_port}/{operation}/{key}/{value}"
-    
-#     method = request.method
-#     try:
-#         if method == 'GET':
-#             response = requests.get(target_url)
-#         elif method == 'POST':
-#             value = request.args.get('value')
-#             response = requests.post(target_url, params={'value': value})
-#         elif method == 'PUT':
-#             value = request.args.get('value')
-#             response = requests.dele
-#         elif method == 'DELETE':
-#             value = request.args.get('value')
-#         else:
         
 if __name__ == '__main__':
     import sys
